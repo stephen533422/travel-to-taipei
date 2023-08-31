@@ -43,25 +43,35 @@ def api_attractions():
 	if connection.is_connected():
 		cursor = connection.cursor(dictionary=True)
 		if keyword:
-			select_stmt = "SELECT mrt_name from mrts WHERE mrt_name = '%s';" %( keyword)
-			cursor.execute(select_stmt)
+			select_stmt = "SELECT mrt_name from mrts WHERE mrt_name = %s;"
+			print(select_stmt)
+			cursor.execute(select_stmt, (keyword,))
 			isfind = cursor.fetchone()
+			print(isfind)
 			if isfind != None:
-				select_stmt =  select_base%(count_name) + " WHERE mrt_name = '%s';" %( keyword)
-				cursor.execute(select_stmt)
+				select_stmt =  select_base%(count_name) + " WHERE mrt_name = %s;"
+				print(select_stmt)
+				cursor.execute(select_stmt, ( keyword,))
 				total=cursor.fetchone()[count_name]
-				select_stmt = select_base%(col_name) + " WHERE mrt_name = '%s' ORDER BY id ASC LIMIT %s,%s;" %( keyword, page*num, num)
+				select_stmt = select_base%(col_name) + " WHERE mrt_name = %s ORDER BY id ASC LIMIT %s,%s;"
+				print(select_stmt)
+				cursor.execute(select_stmt, ( keyword, page*num, num,))
 			else:
-				select_stmt =  select_base%(count_name) + " WHERE name LIKE '%s'" %( keyword+"%")
-				cursor.execute(select_stmt)
+				select_stmt =  select_base%(count_name) + " WHERE name LIKE %s;"
+				search = "%"+keyword+"%"
+				print(search)
+				print(select_stmt)
+				cursor.execute(select_stmt, ( search,))
 				total=cursor.fetchone()[count_name]
-				select_stmt = select_base%(col_name) + " WHERE name LIKE '%s' ORDER BY id ASC LIMIT %s,%s;" % ( keyword+"%", page*num, num)
+				select_stmt = select_base%(col_name) + " WHERE name LIKE %s ORDER BY id ASC LIMIT %s,%s;"
+				print(select_stmt)
+				cursor.execute(select_stmt, ( search, page*num, num,))
 		else:
 			select_stmt =  select_base%(count_name)
 			cursor.execute(select_stmt)
 			total=cursor.fetchone()[count_name]
-			select_stmt = select_base%(col_name) + " ORDER BY id ASC LIMIT %s,%s;" %(page*num, num)
-		cursor.execute(select_stmt)
+			select_stmt = select_base%(col_name) + " ORDER BY id ASC LIMIT %s,%s;"
+			cursor.execute(select_stmt, (page*num, num,))
 		datas = cursor.fetchall()
 		cursor.close()
 		connection.close()
