@@ -14,7 +14,7 @@ connection_pool = mysql.connector.pooling.MySQLConnectionPool(
     **db_config
 )
 
-with open("./taipei-day-trip/data/taipei-attractions.json","r",encoding="utf-8") as f:
+with open("taipei-attractions.json","r",encoding="utf-8") as f:
     file = json.load(f)
     datas = file["result"]["results"]
 
