@@ -34,7 +34,7 @@ def thankyou():
 @app.route("/api/attractions", methods=["GET"])
 def api_attractions():
 	page = int(request.args.get("page"))
-	keywords = request.args.get("keywords")
+	keyword = request.args.get("keyword")
 	num = 12
 	col_name= "attractions.id, name, categories.cat_name, description, address, direction, mrts.mrt_name, latitude, longitude, images"
 	count_name = "COUNT(*)"
@@ -42,20 +42,20 @@ def api_attractions():
 	connection = connection_pool.get_connection()
 	if connection.is_connected():
 		cursor = connection.cursor(dictionary=True)
-		if keywords:
-			select_stmt = "SELECT mrt_name from mrts WHERE mrt_name = '%s';" %( keywords)
+		if keyword:
+			select_stmt = "SELECT mrt_name from mrts WHERE mrt_name = '%s';" %( keyword)
 			cursor.execute(select_stmt)
 			isfind = cursor.fetchone()
 			if isfind != None:
-				select_stmt =  select_base%(count_name) + " WHERE mrt_name = '%s';" %( keywords)
+				select_stmt =  select_base%(count_name) + " WHERE mrt_name = '%s';" %( keyword)
 				cursor.execute(select_stmt)
 				total=cursor.fetchone()[count_name]
-				select_stmt = select_base%(col_name) + " WHERE mrt_name = '%s' ORDER BY id ASC LIMIT %s,%s;" %( keywords, page*num, num)
+				select_stmt = select_base%(col_name) + " WHERE mrt_name = '%s' ORDER BY id ASC LIMIT %s,%s;" %( keyword, page*num, num)
 			else:
-				select_stmt =  select_base%(count_name) + " WHERE name LIKE '%s'" %( keywords+"%")
+				select_stmt =  select_base%(count_name) + " WHERE name LIKE '%s'" %( keyword+"%")
 				cursor.execute(select_stmt)
 				total=cursor.fetchone()[count_name]
-				select_stmt = select_base%(col_name) + " WHERE name LIKE '%s' ORDER BY id ASC LIMIT %s,%s;" % ( keywords+"%", page*num, num)
+				select_stmt = select_base%(col_name) + " WHERE name LIKE '%s' ORDER BY id ASC LIMIT %s,%s;" % ( keyword+"%", page*num, num)
 		else:
 			select_stmt =  select_base%(count_name)
 			cursor.execute(select_stmt)
