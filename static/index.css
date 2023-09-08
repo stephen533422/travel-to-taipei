@@ -18,10 +18,10 @@ body {
     justify-content: space-between;
 }
 .nav_title{
-    width: 150px;
+    width: auto;
     height: 34px;
     color: var(--primary-color-cyan-70, #489);
-    font-family: Noto Sans TC;
+    font-family: "Noto Sans TC", sans-serif;
     font-size: 30px;
     font-style: normal;
     font-weight: 700;
@@ -37,7 +37,7 @@ body {
     background-color: #fff;
     color: var(--secondary-color-gray-70, #666);
     /* Body - Med 16(13.3) */
-    font-family: Noto Sans TC;
+    font-family: "Noto Sans TC", sans-serif;
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
@@ -71,7 +71,7 @@ body {
     /* Text Shadow */
     text-shadow: 0px 0px 30px #ABC;
     /* Header 1 - Bold 28(24) */
-    font-family: Noto Sans TC;
+    font-family: "Noto Sans TC", sans-serif;
     font-size: 28px;
     font-style: normal;
     font-weight: 700;
@@ -84,7 +84,7 @@ body {
     height: 22px;
     color: var(--secondary-color-gray-10, #F8F8F8);
     /* Body - Bold 16(13.3) */
-    font-family: Noto Sans TC;
+    font-family: "Noto Sans TC", sans-serif;
     font-size: 16px;
     font-style: normal;
     font-weight: 700;
@@ -111,7 +111,7 @@ body {
     box-shadow: 0px 0px 20px 0px #ABC;
     color: var(--additional-color-black, #000); 
     /* Body - Bold 16(13.3) */
-    font-family: Noto Sans TC;
+    font-family: "Noto Sans TC", sans-serif;
     font-size: 16px;
     font-style: normal;
     font-weight: 700;
@@ -199,7 +199,7 @@ body {
     color: #666;
     text-align: center;
     /* Body - Med 16(13.3) */
-    font-family: Noto Sans TC;
+    font-family: "Noto Sans TC", sans-serif;
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
@@ -210,7 +210,7 @@ body {
     color: #000;
     text-align: center;
     /* Body - Med 16(13.3) */
-    font-family: Noto Sans TC;
+    font-family: "Noto Sans TC", sans-serif;
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
@@ -229,6 +229,7 @@ body {
 .page{
     display: flex;
     flex-wrap: wrap;
+    width: 100%;
     gap: 30px;
     padding: 15px;
 }
@@ -263,7 +264,7 @@ img{
     padding: 10px;
     color: var(--additional-color-white, #FFF);
     /* Body - Bold 16(13.3) */
-    font-family: Noto Sans TC;
+    font-family: "Noto Sans TC", sans-serif;
     font-size: 16px;
     font-style: normal;
     font-weight: 700;
@@ -289,7 +290,7 @@ img{
 .footer_content{
     color: var(--additional-color-white, #FFF);
     /* Body - Bold 16(13.3) */
-    font-family: Noto Sans TC;
+    font-family: "Noto Sans TC", sans-serif;
     font-size: 16px;
     font-style: normal;
     font-weight: 700;
@@ -301,6 +302,7 @@ img{
         width: 100%;
     }
     .page{
+        width: auto;
         justify-content: space-between;
     }
     .hero_section{
