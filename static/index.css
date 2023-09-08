@@ -32,7 +32,9 @@ body {
     height: 34px;
 }
 .btn{
-    width: 84px;
+    width: auto;
+    box-sizing: border-box;
+    padding: 10px;
     border: none;
     background-color: #fff;
     color: var(--secondary-color-gray-70, #666);
@@ -309,6 +311,7 @@ img{
         display: flex;
     }
     .nav_content{
+        width: 100%;
         padding: 0px 10px 0px 10px;
     }
     .slogan_content{
