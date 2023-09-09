@@ -223,8 +223,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
     width: 100%;
     height: auto;
 }
@@ -298,14 +297,13 @@ img{
     font-weight: 700;
     line-height: 13.3px; /* 83.125% */
 }
-/* 600px <screen-width <=1200px*/
+/* 900px <screen-width <=1200px*/
 @media (max-width: 1200px){
     .main_content{
         width: 100%;
     }
     .page{
         width: auto;
-        justify-content: space-between;
     }
     .hero_section{
         display: flex;
@@ -316,6 +314,18 @@ img{
     }
     .slogan_content{
         margin: 0px 20px 0px 20px;
+    }
+    .picture{
+        object-fit: cover;
+    }
+    .attraction{
+        width: calc( (100% - 60px)/3 );
+    }
+}
+/* 600px< screen-width <= 900px*/
+@media (max-width: 900px){
+    .attraction{
+        width: calc( (100% - 30px) /2);
     }
 }
 /* 360px <screen-width <=600px*/
