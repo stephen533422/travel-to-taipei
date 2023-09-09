@@ -106,9 +106,12 @@ const loadAttractions = (response) => {
         attraction_detail.appendChild(attraction_mrt);
         attraction_detail.appendChild(attraction_category);
     }
-    console.log(response.data);
+    //console.log(response.data);
     if(response.data.length==0){
-        page.textContent="查無資料";
+        let text=document.createElement("div");
+        text.className="text";
+        text.textContent="查無資料";
+        page.appendChild(text);
     }
     attractions.appendChild(page);
 }
