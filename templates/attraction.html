@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta charset="utf-8" />
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='reset.css') }}" />
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='attraction.css') }}" />
+        <title>台北一日遊</title>
+    </head>
+    <body>
+        <div class="nav">
+            <div class="nav_content">
+                <div class="nav_title">
+                    台北一日遊
+                </div>
+                <div class="nav_btn">
+                    <button class="btn">
+                        預定行程
+                    </button>
+                    <button class="btn">
+                        登入/註冊
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="separator_nav"></div>
+        <div class="main">
+            <div class="main_content">
+                <div class="section">
+                    <div class="picture_container">
+                        <button class="left_btn"></button>
+                        <button class="right_btn"></button>
+                        <div class="picture_list">
+                            <!--<img class="picture" src="{{ url_for('static',filename='image.png') }}">-->
+                        </div>
+                        <div class="circle_container">
+                            <!--<div class="circle_btn"></div>
+                            <div class="circle_btn"></div>
+                            <div class="circle_btn"></div>-->
+                        </div>
+                    </div>
+                    <div class="profile">
+                        <div class="name text gray fs24 fw700 lh24"></div>
+                        <div class="detail text gray fs16 fw500 lh13"></div>
+                        <form class="book_form">
+                            <div class="text gray fs16 fw700 lh13 h22">訂購導覽行程</div>
+                            <div class="text gray fs16 fw500">以此景點為中心的一日行程，帶您探索城市角落故事</div>
+                            <div class="date">
+                                <div class="text gray fs16 fw700 lh13">選擇日期：</div>
+                                <div class="date_btn">
+                                    <input type="date" class="date_input" id="date" pattern="\d{4}-\d{2}-\d{2}"/>
+                                    <div class="date_icon"></div>
+                                </div>
+                            </div>
+                            <div class="period">
+                                <div class="text gray fs16 fw700 lh13">選擇時間：</div>
+                                <div class="radio_btn">
+                                    <input type="radio" class="radio" name="period" value="morning" checked />
+                                    <label class="text gray fs16 fw500 lh13" for="morning">上半天</label>
+                                </div>
+                                <div class="radio_btn">
+                                    <input type="radio" class="radio" name="period" value="afternoon" />
+                                    <label class="text gray fs16 fw500 lh13"for="afternoon">下半天</label>
+                                </div>
+                            </div>
+                            <div class="charge">
+                                <div class="text gray fs16 fw700 lh13">導覽費用：</div>
+                                <div class="cost text gray fs16 fw500 lh13">新台幣2000元</div>
+                            </div>
+                            <button class="book_btn" type="submit"><div class="text white fs19 fw400 lh16">開始預約行程</div></button>
+                        </form>
+                    </div>
+                </div>
+                <div class="separator"></div>
+                <div class="infors">
+                    <div class="container">
+                        <div class="description text gray fs16 fw400"></div>
+                    </div>
+                    <div class="container">
+                        <div class="container gray fs16 fw700 lh13 h32">景點地址：</div>
+                        <div class="address text gray fs16 fw400"></div>
+                    </div>
+                    <div class="container">
+                        <div class="container gray fs16 fw700 lh13 h32">交通方式：</div>
+                        <div class="transport text gray fs16 fw400"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+            <div class="footer_content">
+                COPYRIGHT © 2021 台北一日遊
+            </div>
+        </footer>
+        <script>
+            var id='{{ id }}';
+        </script>
+        <script src="{{ url_for('static',filename='attraction.js') }}"> </script>
+    </body>
+</html>
