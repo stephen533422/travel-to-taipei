@@ -73,14 +73,19 @@ async function loadPage(keyword){
     loadAttractions(response);
     nextPage=response.nextPage;
 }
+function goPage(id){
+    location.href = "/attraction/" + id.toString();
+}
 const loadAttractions = (response) => {
-    
     const attractions=document.querySelector(".attractions");
     let page = document.createElement("div");
     page.className="page";
     for(let i=0; i<response.data.length; i++){
         let attraction=document.createElement("div");
         attraction.className="attraction";
+        attraction.addEventListener("click", (e)=>{
+            goPage(response.data[i].id);
+        })
         let picture_container=document.createElement("div");
         picture_container.className="picture_container";
         let picture=document.createElement("img");
