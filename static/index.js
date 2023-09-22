@@ -17,7 +17,9 @@ let dom={
     login_content: document.querySelector(".login_content"),
     signup_content: document.querySelector(".signup_content"),
     signup_description: document.querySelector(".signup_content .modal_description"),
-    message: document.querySelector(".message"),
+    login_description: document.querySelector(".login_content .modal_description"),
+    signup_message: document.querySelector(".signup_message"),
+    login_message: document.querySelector(".login_message"),
 };
 
 let search_btn = document.querySelector(".search_btn");
@@ -222,19 +224,19 @@ async function signUp(){
         return response.json()
     }).then((data) => {
         console.log(data);
-        if(!dom.message){
+        if(!dom.signup_message){
             let message = document.createElement("div");
-            message.className="modal_description message";
-            dom.message=message;
+            message.className="modal_description signup_message";
+            dom.signup_message=message;
         }
         if(data.ok===true){
-            dom.message.style.color = "green";
-            dom.message.textContent = "註冊成功";
+            dom.signup_message.style.color = "green";
+            dom.signup_message.textContent = "註冊成功";
         }else if(data.message==="already signedup"){
-            dom.message.style.color = "red";
-            dom.message.textContent = "此信箱已註冊"
+            dom.signup_message.style.color = "red";
+            dom.signup_message.textContent = "此信箱已註冊"
         }
-        dom.signup_content.insertBefore(dom.message, dom.signup_description);
+        dom.signup_content.insertBefore(dom.signup_message, dom.signup_description);
     });
 }
 
@@ -250,13 +252,26 @@ async function logIn(){
             "Content-Type": "application/json"
           },
         body: JSON.stringify(form_data),
+    }).then((response) => {
+        //console.log(response);
+        return response.json()
+    }).then((data) => {
+        console.log(data);
+        if(data.token){
+            localStorage.setItem("token",data.token);
+            getUserByToken();
+            location.reload();
+        }else{
+            if(!dom.login_message){
+                let message = document.createElement("div");
+                message.className="modal_description login_message";
+                dom.login_message=message;
+            }
+            dom.login_message.style.color = "red";
+            dom.login_message.textContent = "帳號或密碼錯誤"
+        }
+        dom.login_content.insertBefore(dom.login_message, dom.login_description);
     });
-    if(data.ok){
-        data=await data.json();
-        localStorage.setItem("token",data.token);
-        getUserByToken();
-        location.reload();
-    }
 }
 
 function logOut(){

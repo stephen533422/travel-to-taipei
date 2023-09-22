@@ -221,6 +221,9 @@ def api_user_auth():
 					}
 					token=jwt.encode(payload,key,algorithm = 'HS256')
 					return jsonify({"token":token}), 200
+				else:
+					return_data={"error": True, "message": "invalid username or password"}
+					return jsonify(return_data), 400
 			else:
 				return_data={"error": True, "message": "invalid username or password"}
 				return jsonify(return_data), 400
