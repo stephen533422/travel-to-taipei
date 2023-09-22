@@ -1,6 +1,24 @@
 //const body = document.querySelector("body");
 //body.scrollTop=0;
 let nextPage=0;
+let dom={
+    sign_btn: document.querySelector(".sign.btn"),
+    modal: document.querySelector(".modal"),
+    close_btn: document.querySelector(".close"),
+    login_btn: document.querySelector(".login_btn"),
+    login_email: document.querySelector(".login_email"),
+    login_password: document.querySelector(".login_password"),
+    signup_btn: document.querySelector(".signup_btn"),
+    signup_name: document.querySelector(".signup_name"),
+    signup_email: document.querySelector(".signup_email"),
+    signup_password: document.querySelector(".signup_password"),
+    switch_login: document.querySelector(".switch_login"),
+    switch_signup: document.querySelector(".switch_signup"),
+    login_content: document.querySelector(".login_content"),
+    signup_content: document.querySelector(".signup_content"),
+    signup_description: document.querySelector(".signup_content .modal_description"),
+    message: document.querySelector(".message"),
+};
 
 let search_btn = document.querySelector(".search_btn");
 search_btn.addEventListener("click", (e)=>{
@@ -159,4 +177,111 @@ loadPage().then(()=>{
     infiniteScroll();
 });
 
+async function getUserByToken(){
+    let token = localStorage.getItem("token");
+    let user=await fetch("/api/user/auth",{
+        method: "GET",
+        headers: {
+            "Authorization":`Bearer ${token}`
+        },
+    });
+    user=await user.json();
+    if(user.data){
+        try{
+            dom.sign_btn.removeEventListener("click", openModal)
+        }
+        catch(e){
+        }
+        dom.sign_btn.textContent="登出系統";
+        dom.sign_btn.addEventListener("click", logOut);
+    }
+    else{
+        try{
+            dom.sign_btn.removeEventListener("click", logOut);
+        }
+        catch(e){
+        }
+        dom.sign_btn.textContent="註冊/登入";
+        dom.sign_btn.addEventListener("click", openModal);
+    }
+}
+async function signUp(){
+    const form_data = {
+        "name": dom.signup_name.value,
+        "email": dom.signup_email.value,
+        "password": dom.signup_password.value,
+    }
+    fetch("/api/user",{
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+          },
+        body: JSON.stringify(form_data),
+    }).then((response) => {
+        //console.log(response);
+        return response.json()
+    }).then((data) => {
+        console.log(data);
+        if(!dom.message){
+            let message = document.createElement("div");
+            message.className="modal_description message";
+            dom.message=message;
+        }
+        if(data.ok===true){
+            dom.message.style.color = "green";
+            dom.message.textContent = "註冊成功";
+        }else if(data.message==="already signedup"){
+            dom.message.style.color = "red";
+            dom.message.textContent = "此信箱已註冊"
+        }
+        dom.signup_content.insertBefore(dom.message, dom.signup_description);
+    });
+}
 
+async function logIn(){
+    const form_data = {
+        "email": dom.login_email.value,
+        "password": dom.login_password.value,
+    };
+    //console.log(form_data);
+    let data =await fetch("/api/user/auth",{
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+          },
+        body: JSON.stringify(form_data),
+    });
+    if(data.ok){
+        data=await data.json();
+        localStorage.setItem("token",data.token);
+        getUserByToken();
+        location.reload();
+    }
+}
+
+function logOut(){
+    localStorage.removeItem("token");
+    dom.sign_btn.removeEventListener("click", logOut);
+    location.reload();
+}
+
+function openModal(){
+    dom.modal.style.display="block";
+}
+function closeModal(){
+    dom.modal.style.display="none";
+}
+
+
+getUserByToken();
+dom.close_btn.addEventListener("click", closeModal);
+dom.login_btn.addEventListener("click", logIn);
+dom.signup_btn.addEventListener("click", signUp);
+dom.switch_login.addEventListener("click", () => {
+    dom.signup_content.style.display="none";
+    dom.login_content.style.display="flex";
+});
+dom.switch_signup.addEventListener("click", () =>{
+    dom.signup_content.style.display="flex";
+    dom.login_content.style.display="none";
+});

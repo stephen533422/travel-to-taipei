@@ -1,8 +1,13 @@
 from flask import *
 import mysql.connector
+import os
+import datetime
+import jwt
+
 app=Flask(__name__)
 app.config["JSON_AS_ASCII"]=False
 app.config["TEMPLATES_AUTO_RELOAD"]=True
+key = os.urandom(12).hex()
 
 db_config = {
   'host': 'localhost',
@@ -139,5 +144,88 @@ def api_mrts():
 		mrts.append(data["mrt_name"])
 	return_data={"data":mrts}
 	return jsonify(return_data), 200
+
+@app.route("/api/user", methods=["POST"])
+def api_user():
+    name = request.json["name"]
+    email = request.json["email"]
+    password = request.json["password"]
+    return_data={"error": True, "message": "invalid username or password"}
+    if name=="" or email == "" or password == "":
+        return jsonify(return_data), 400
+    connection = connection_pool.get_connection()
+    if connection.is_connected():
+        cursor = connection.cursor(dictionary=True)
+        select_stmt = "SELECT * FROM member WHERE email = %s;"
+        cursor.execute(select_stmt, (email,))
+        issigned = cursor.fetchone()
+        if issigned != None:
+            return_data={"error": True, "message": "already signedup"}
+            cursor.close()
+            connection.close()
+            return jsonify(return_data), 400
+        else:
+            insert_stmt = "INSERT INTO member (name, email, password) VALUES( %s, %s, %s);"
+            cursor.execute(insert_stmt, (name, email, password,))
+            connection.commit()
+        cursor.close()
+        connection.close()
+        return_data={"ok": True}
+        return jsonify(return_data), 200
+    else:
+        return_data={"error": True, "message": "connection failed"}
+        return jsonify(return_data), 500
+
+@app.route("/api/user/auth", methods=["GET","PUT"])
+def api_user_auth():
+	if request.headers.get("Authorization"):
+		token_type, token = request.headers.get('Authorization').split(" ")
+		if token_type == "Bearer":
+			try:
+				data=jwt.decode(token, key, algorithms='HS256')
+				#print(data)
+				return jsonify({"data":data["data"]}), 200
+			except jwt.ExpiredSignatureError:
+				print('token has expired')
+			except:
+				pass
+			return jsonify({"data":None}), 200
+		else:
+			return jsonify({"data":None}), 200
+
+	if request.method == "PUT":
+		email = request.json["email"]
+		password = request.json["password"]
+		if email == "" or password == "":
+			return_data={"error": True, "message": "invalid username or password"}
+			return jsonify(return_data), 400
+		connection = connection_pool.get_connection()
+		if connection.is_connected():
+			cursor=connection.cursor(dictionary=True)
+			select_stmt=("SELECT * from member WHERE email = %s")
+			cursor.execute(select_stmt, (email,))
+			user = cursor.fetchone()
+			cursor.close()
+			connection.close()
+			if user is not None:
+				if email == user["email"] and password == user["password"]:
+					exp_time = datetime.datetime.utcnow() + datetime.timedelta(days=7)
+					data = {
+						"id": user["id"],
+						"name": user["name"],
+						"email": user["email"]
+					}
+					payload = {
+						"data": data,
+						"expire": exp_time.timestamp()
+					}
+					token=jwt.encode(payload,key,algorithm = 'HS256')
+					return jsonify({"token":token}), 200
+			else:
+				return_data={"error": True, "message": "invalid username or password"}
+				return jsonify(return_data), 400
+		else:			
+			return_data={"error": True, "message": "connection failed"}
+			return jsonify(return_data), 500
 
 app.run(host="0.0.0.0", port=3000)
