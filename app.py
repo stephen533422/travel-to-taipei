@@ -28,7 +28,7 @@ def index():
 	return render_template("index.html")
 @app.route("/attraction/<id>")
 def attraction(id):
-	return render_template("attraction.html", id=id)
+	return render_template("attraction.html")
 @app.route("/booking")
 def booking():
 	return render_template("booking.html")
@@ -147,16 +147,16 @@ def api_mrts():
 
 @app.route("/api/user", methods=["POST"])
 def api_user():
-    name = request.json["name"]
-    email = request.json["email"]
-    password = request.json["password"]
-    return_data={"error": True, "message": "invalid username or password"}
-    if name=="" or email == "" or password == "":
+    name = request.json.get("name")
+    email = request.json.get("email")
+    password = request.json.get("password")
+    if (name=="" or name==None) or (email == "" or email==None) or (password == "" or password==None):
+        return_data={"error": True, "message": "invalid username or password"}
         return jsonify(return_data), 400
     connection = connection_pool.get_connection()
     if connection.is_connected():
         cursor = connection.cursor(dictionary=True)
-        select_stmt = "SELECT * FROM member WHERE email = %s;"
+        select_stmt = "SELECT * FROM members WHERE email = %s;"
         cursor.execute(select_stmt, (email,))
         issigned = cursor.fetchone()
         if issigned != None:
@@ -165,7 +165,7 @@ def api_user():
             connection.close()
             return jsonify(return_data), 400
         else:
-            insert_stmt = "INSERT INTO member (name, email, password) VALUES( %s, %s, %s);"
+            insert_stmt = "INSERT INTO members (name, email, password) VALUES( %s, %s, %s);"
             cursor.execute(insert_stmt, (name, email, password,))
             connection.commit()
         cursor.close()
@@ -176,33 +176,37 @@ def api_user():
         return_data={"error": True, "message": "connection failed"}
         return jsonify(return_data), 500
 
-@app.route("/api/user/auth", methods=["GET","PUT"])
-def api_user_auth():
+def token_auth():
 	if request.headers.get("Authorization"):
 		token_type, token = request.headers.get('Authorization').split(" ")
 		if token_type == "Bearer":
 			try:
 				data=jwt.decode(token, key, algorithms='HS256')
 				#print(data)
-				return jsonify({"data":data["data"]}), 200
+				return data.get("data")
 			except jwt.ExpiredSignatureError:
 				print('token has expired')
 			except:
 				pass
-			return jsonify({"data":None}), 200
-		else:
-			return jsonify({"data":None}), 200
+	data=None
+	return data
+
+@app.route("/api/user/auth", methods=["GET","PUT"])
+def api_user_auth():
+	if request.method == "GET":
+		user=token_auth()
+		return jsonify({"data":user}), 200
 
 	if request.method == "PUT":
-		email = request.json["email"]
-		password = request.json["password"]
-		if email == "" or password == "":
+		email = request.json.get("email")
+		password = request.json.get("password")
+		if (email == "" or email == None) or (password == "" or password == None):
 			return_data={"error": True, "message": "invalid username or password"}
 			return jsonify(return_data), 400
 		connection = connection_pool.get_connection()
 		if connection.is_connected():
 			cursor=connection.cursor(dictionary=True)
-			select_stmt=("SELECT * from member WHERE email = %s")
+			select_stmt=("SELECT * from members WHERE email = %s")
 			cursor.execute(select_stmt, (email,))
 			user = cursor.fetchone()
 			cursor.close()
@@ -230,5 +234,62 @@ def api_user_auth():
 		else:			
 			return_data={"error": True, "message": "connection failed"}
 			return jsonify(return_data), 500
+
+@app.route("/api/booking", methods=["GET", "POST", "DELETE"])
+def api_booking():
+	user=token_auth()
+	if user == None:
+		return_data={"error": True, "message": "authentication failed"}
+		return jsonify(return_data), 403
+	connection = connection_pool.get_connection()
+	if connection.is_connected():
+		cursor=connection.cursor(dictionary=True)
+		select_stmt = "SELECT * FROM bookings WHERE member_id = %s"
+		cursor.execute(select_stmt, (user["id"],))
+		isbook = cursor.fetchone()
+		if request.method == "GET":
+			if isbook != None:
+				select_stmt = "SELECT * FROM attractions WHERE id = %s"
+				cursor.execute(select_stmt, (isbook["attraction_id"],))
+				attraction_data = cursor.fetchone()
+				data = {
+					"attraction":{
+						"id":attraction_data["id"], 
+						"name":attraction_data["name"], 
+						"address":attraction_data["address"], 
+						"image": json.loads(attraction_data["images"])[0]
+					},
+					"date": isbook["date"].strftime("%Y-%m-%d"),
+					"time": isbook["time"],
+					"price": isbook["price"]}
+				cursor.close()
+				connection.close()
+				return jsonify({"data":data}), 200
+			else:
+				cursor.close()
+				connection.close()
+				return jsonify({"data":None}), 200
+		if request.method == "POST":
+			booking = request.json
+			if isbook != None: 
+				update_stmt = "UPDATE bookings SET attraction_id = %s, date = %s, time = %s, price = %s WHERE member_id = %s"
+				data =  (booking["attractionId"], booking["date"], booking["time"], booking["price"], user["id"])
+				cursor.execute(update_stmt, data)
+			else:
+				insert_stmt = "INSERT INTO bookings (member_id, attraction_id, date, time, price) VALUES( %s, %s, %s, %s, %s);"
+				data = (user["id"], booking["attractionId"], booking["date"], booking["time"], booking["price"])
+				cursor.execute(insert_stmt, data)
+			connection.commit()
+			cursor.close()
+			connection.close()
+			return jsonify({"ok": True}), 200
+		if request.method == "DELETE":
+			if isbook != None:
+				delete_stmt = "DELETE FROM bookings WHERE member_id = %s"
+				cursor.execute(delete_stmt,(user["id"],))
+				connection.commit()
+			cursor.close()
+			connection.close()
+			return jsonify({"ok": True}), 200
 
 app.run(host="0.0.0.0", port=3000)

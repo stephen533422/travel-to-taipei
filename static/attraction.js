@@ -1,11 +1,11 @@
-//console.log(id);
-dom={
+let dom={
     nav_title: document.querySelector(".nav_title"),
     picture_list: document.querySelector(".picture_list"),
     circle_container: document.querySelector(".circle_container"),
     left_btn: document.querySelector(".left_btn"),
     right_btn: document.querySelector(".right_btn"),
     sign_btn: document.querySelector(".sign.btn"),
+    book_btn: document.querySelector(".book.btn"),
     modal: document.querySelector(".modal"),
     close_btn: document.querySelector(".close"),
     login_btn: document.querySelector(".login_btn"),
@@ -23,16 +23,19 @@ dom={
     login_description: document.querySelector(".login_content .modal_description"),
     signup_message: document.querySelector(".signup_message"),
     login_message: document.querySelector(".login_message"),
+
+    date: document.querySelector(".date_input"),
+    time: document.querySelectorAll(".radio"),
+    price: document.querySelector(".cost"),
+    sendbook_btn: document.querySelector(".book_btn"),
 }
-dom.nav_title.addEventListener("click", (e)=>{
-    console.log("click");
-    location.href = "/";
-})
-url="../api/attraction/"+id;
+const path=window.location.pathname;
+url="../api"+path;
 fetch(url).then((response)=>{
     return response.json();
 }).then((response)=>{
     // console.log(response);
+    attraction = response.data;
     let name=document.querySelector(".name");
     name.textContent=response.data.name;
     let detail=document.querySelector(".detail");
@@ -123,10 +126,10 @@ function init(){
 let radios=document.querySelectorAll(".radio")
 let cost=document.querySelector(".cost");
 radios[0].addEventListener("click", (e)=>{
-    cost.textContent="新台幣2000元";
+    cost.textContent= "新台幣 2000 元";
 })
 radios[1].addEventListener("click", (e)=>{
-    cost.textContent="新台幣2500元";
+    cost.textContent= "新台幣 2500 元";
 })
 
 async function getUserByToken(){
@@ -141,20 +144,28 @@ async function getUserByToken(){
     if(user.data){
         try{
             dom.sign_btn.removeEventListener("click", openModal)
+            dom.book_btn.removeEventListener("click", openModal);
+            dom.sendbook_btn.removeEventListener("click", openModal);
         }
         catch(e){
         }
         dom.sign_btn.textContent="登出系統";
         dom.sign_btn.addEventListener("click", logOut);
+        dom.book_btn.addEventListener("click", openBooking);
+        dom.sendbook_btn.addEventListener("click", sendBooking);
     }
     else{
         try{
             dom.sign_btn.removeEventListener("click", logOut);
+            dom.book_btn.removeEventListener("click", openBooking);
+            dom.sendbook_btn.removeEventListener("click", sendBooking);
         }
         catch(e){
         }
         dom.sign_btn.textContent="註冊/登入";
         dom.sign_btn.addEventListener("click", openModal);
+        dom.book_btn.addEventListener("click", openModal);
+        dom.sendbook_btn.addEventListener("click", openModal);
     }
 }
 async function signUp(){
@@ -219,8 +230,8 @@ async function logIn(){
             }
             dom.login_message.style.color = "red";
             dom.login_message.textContent = "帳號或密碼錯誤"
+            dom.login_content.insertBefore(dom.login_message, dom.login_description);
         }
-        dom.login_content.insertBefore(dom.login_message, dom.login_description);
     });
 }
 
@@ -236,8 +247,49 @@ function openModal(){
 function closeModal(){
     dom.modal.style.display="none";
 }
+function openBooking(){
+    window.location.href="/booking";
+}
+async function sendBooking(){
+    let token = localStorage.getItem("token");
+    if(dom.date.value==""){
+        alert("請選擇日期");
+        return;
+    }
+    let form_data = {
+        "attractionId": attraction.id,
+        "date": dom.date.value,
+        "price": dom.price.textContent.split(" ")[1],
+    };
+    if(dom.time[0].checked){
+        form_data["time"]="morning";
+    }
+    else if(dom.time[1].checked){
+        form_data["time"]="afternoon";
+    }
+    fetch("/api/booking",{
+        method: "POST",
+        headers: {
+            "Authorization":`Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        body: JSON.stringify(form_data),
+    }).then((response) => {
+        //console.log(response);
+        return response.json()
+    }).then((response) => {
+        console.log(response);
+        console.log(response.ok === true);
+        if(response.ok === true){
+            location.href = "/booking";
+        }
+    })
+}
 
-
+dom.nav_title.addEventListener("click", (e)=>{
+    //console.log("click");
+    location.href = "/";
+})
 getUserByToken();
 dom.close_btn.addEventListener("click", closeModal);
 dom.login_btn.addEventListener("click", logIn);

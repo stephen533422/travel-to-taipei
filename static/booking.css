@@ -1,0 +1,237 @@
+.separator_nav{
+    width: 100%;
+    height: 0px;
+    border-bottom: solid 1px #E8E8E8;
+    box-sizing: border-box;
+}
+.main{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+.main_content{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 1200px;
+}
+.container{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 1000px;
+    padding: 40px 0px;
+    box-sizing: border-box;
+    gap: 15px;
+}
+.separator{
+    width: 100%;
+    height: 0px;
+    border-bottom: #E8E8E8 1px solid;
+}
+.headline{
+    width: 100%;
+    height: 27px;
+    display: flex;
+    align-items: center;
+}
+.text{
+    font-family: "Noto Sans TC", sans-serif;
+    font-style: normal;
+    line-height: normal;
+}
+.gray{
+    color: var(--secondary-color-gray-70, #666);
+}
+.fs19{
+    font-size:19px;
+}
+.fw700{
+    font-weight: 700;
+}
+.lh16{
+    line-height: 16px;
+}
+.section{
+    display: flex;
+    width: calc(100% - 20px);
+    flex-wrap: nowrap;
+    box-sizing: border-box;
+    gap: 30px;
+}
+.nobooking{
+    display: none;
+    width: 100%;
+}
+.image{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 200px;
+}
+.attraction_image{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.infor{
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 280px);
+    gap: 10px;
+    position: relative;
+    padding-bottom: 30px;
+}
+.delete_icon{
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background: url(icon/delete.png) no-repeat center / 30px 30px;
+}
+.delete_icon:hover{
+    opacity: 0.75;
+    cursor: pointer;
+}
+.cyan{
+    color: var(--primary-color-cyan-70, #489);
+}
+.fs16{
+    font-size: 16px;
+}
+.lh13{
+    line-height: 13.3px; 
+}
+.frame{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 24px;
+}
+.pb5{
+    padding-bottom: 5px;
+}
+.pb7{
+    padding-bottom: 7px;
+}
+.pb10{
+    padding-bottom: 10px;
+}
+.pb15{
+    padding-bottom: 15px;
+}
+.pl5{
+    padding-left: 5px;
+}
+.fw500{
+    font-weight: 500;
+}
+.title{
+    display: flex;
+    align-items: center;
+    width: calc(100% - 20px);
+    height: 24px;
+}
+.field{
+    display: flex;
+    align-items: center;
+    width: calc(100% - 20px);
+    height: 38px;
+}
+.notice{
+    display: flex;
+    align-items: center;
+    width: calc(100% - 20px);
+    padding: 5px 0px;
+    height: 24px;
+    box-sizing: border-box;
+}
+.container_inputbox{
+    width: 200px;
+    height: 38px;
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 1px solid var(--Gray-300, #E8E8E8);
+    background: var(--White, #FFF);
+}
+.black{
+    color: var(--additional-color-black, #000);
+}
+.container_inputbox:placeholder{
+    color: var(--secondary-color-gray-50, #757575); 
+}
+.totalprice{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    width: calc(100% - 20px);
+    height: 20px;
+}
+.btn_container{
+    width: calc(100% - 20px);
+    display: flex;
+    justify-content: end;
+    align-items: center;
+}
+.purchase_btn{
+    width: 173px;
+    height: 36px;
+    border-radius: 5px;
+    background: var(--primary-color-cyan-70, #489);
+    color: var(--additional-color-white, #FFF);
+    text-align: center;
+    /* Button - Reg 19(16) */
+    font-family: "Noto Sans TC", sans-serif;
+    font-size: 19px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px; /* 84.211% */
+    border: none;
+    padding: 10px 20px;
+}
+.purchase_btn:hover{
+    cursor: pointer;
+}
+.footer{
+    height: auto;
+    align-items: baseline;
+    flex-grow: 1;
+    padding: 40px 0px;
+}
+.hide{
+    display: none;
+}
+@media (max-width: 1020px) {
+    .headline{
+        width: calc(100% - 20px);
+    }
+    .nobooking{
+        width: calc(100% - 20px);
+    }
+    .container{
+        width: 100%;
+    }
+}
+@media (max-width: 680px){
+    .notice{
+        height: 48px;
+    }
+    .notice .text{
+        line-height: normal;
+    }
+    .section{
+        flex-direction: column;
+    }
+    .infor{
+        width: 100%;
+    }
+    .delete_icon{
+        top: calc(100% - 30px);
+    }
+    .image{
+        width: 100%;
+    }
+}
