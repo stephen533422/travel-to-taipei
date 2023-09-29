@@ -5,6 +5,24 @@ dom={
     circle_container: document.querySelector(".circle_container"),
     left_btn: document.querySelector(".left_btn"),
     right_btn: document.querySelector(".right_btn"),
+    sign_btn: document.querySelector(".sign.btn"),
+    modal: document.querySelector(".modal"),
+    close_btn: document.querySelector(".close"),
+    login_btn: document.querySelector(".login_btn"),
+    login_email: document.querySelector(".login_email"),
+    login_password: document.querySelector(".login_password"),
+    signup_btn: document.querySelector(".signup_btn"),
+    signup_name: document.querySelector(".signup_name"),
+    signup_email: document.querySelector(".signup_email"),
+    signup_password: document.querySelector(".signup_password"),
+    switch_login: document.querySelector(".switch_login"),
+    switch_signup: document.querySelector(".switch_signup"),
+    login_content: document.querySelector(".login_content"),
+    signup_content: document.querySelector(".signup_content"),
+    signup_description: document.querySelector(".signup_content .modal_description"),
+    login_description: document.querySelector(".login_content .modal_description"),
+    signup_message: document.querySelector(".signup_message"),
+    login_message: document.querySelector(".login_message"),
 }
 dom.nav_title.addEventListener("click", (e)=>{
     console.log("click");
@@ -110,3 +128,125 @@ radios[0].addEventListener("click", (e)=>{
 radios[1].addEventListener("click", (e)=>{
     cost.textContent="新台幣2500元";
 })
+
+async function getUserByToken(){
+    let token = localStorage.getItem("token");
+    let user=await fetch("/api/user/auth",{
+        method: "GET",
+        headers: {
+            "Authorization":`Bearer ${token}`
+        },
+    });
+    user=await user.json();
+    if(user.data){
+        try{
+            dom.sign_btn.removeEventListener("click", openModal)
+        }
+        catch(e){
+        }
+        dom.sign_btn.textContent="登出系統";
+        dom.sign_btn.addEventListener("click", logOut);
+    }
+    else{
+        try{
+            dom.sign_btn.removeEventListener("click", logOut);
+        }
+        catch(e){
+        }
+        dom.sign_btn.textContent="註冊/登入";
+        dom.sign_btn.addEventListener("click", openModal);
+    }
+}
+async function signUp(){
+    const form_data = {
+        "name": dom.signup_name.value,
+        "email": dom.signup_email.value,
+        "password": dom.signup_password.value,
+    }
+    fetch("/api/user",{
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+          },
+        body: JSON.stringify(form_data),
+    }).then((response) => {
+        //console.log(response);
+        return response.json()
+    }).then((data) => {
+        console.log(data);
+        if(!dom.signup_message){
+            let message = document.createElement("div");
+            message.className="modal_description signup_message";
+            dom.signup_message=message;
+        }
+        if(data.ok===true){
+            dom.signup_message.style.color = "green";
+            dom.signup_message.textContent = "註冊成功";
+        }else if(data.message==="already signedup"){
+            dom.signup_message.style.color = "red";
+            dom.signup_message.textContent = "此信箱已註冊"
+        }
+        dom.signup_content.insertBefore(dom.signup_message, dom.signup_description);
+    });
+}
+
+async function logIn(){
+    const form_data = {
+        "email": dom.login_email.value,
+        "password": dom.login_password.value,
+    };
+    //console.log(form_data);
+    let data =await fetch("/api/user/auth",{
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+          },
+        body: JSON.stringify(form_data),
+    }).then((response) => {
+        //console.log(response);
+        return response.json()
+    }).then((data) => {
+        console.log(data);
+        if(data.token){
+            localStorage.setItem("token",data.token);
+            getUserByToken();
+            location.reload();
+        }else{
+            if(!dom.login_message){
+                let message = document.createElement("div");
+                message.className="modal_description login_message";
+                dom.login_message=message;
+            }
+            dom.login_message.style.color = "red";
+            dom.login_message.textContent = "帳號或密碼錯誤"
+        }
+        dom.login_content.insertBefore(dom.login_message, dom.login_description);
+    });
+}
+
+function logOut(){
+    localStorage.removeItem("token");
+    dom.sign_btn.removeEventListener("click", logOut);
+    location.reload();
+}
+
+function openModal(){
+    dom.modal.style.display="block";
+}
+function closeModal(){
+    dom.modal.style.display="none";
+}
+
+
+getUserByToken();
+dom.close_btn.addEventListener("click", closeModal);
+dom.login_btn.addEventListener("click", logIn);
+dom.signup_btn.addEventListener("click", signUp);
+dom.switch_login.addEventListener("click", () => {
+    dom.signup_content.style.display="none";
+    dom.login_content.style.display="flex";
+});
+dom.switch_signup.addEventListener("click", () =>{
+    dom.signup_content.style.display="flex";
+    dom.login_content.style.display="none";
+});
