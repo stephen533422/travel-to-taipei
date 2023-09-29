@@ -1,11 +1,13 @@
 let dom={
     nav_title: document.querySelector(".nav_title"),
+    sign_btn: document.querySelector(".sign.btn"),
+    book_btn: document.querySelector(".book.btn"),
+
     picture_list: document.querySelector(".picture_list"),
     circle_container: document.querySelector(".circle_container"),
     left_btn: document.querySelector(".left_btn"),
     right_btn: document.querySelector(".right_btn"),
-    sign_btn: document.querySelector(".sign.btn"),
-    book_btn: document.querySelector(".book.btn"),
+
     modal: document.querySelector(".modal"),
     close_btn: document.querySelector(".close"),
     login_btn: document.querySelector(".login_btn"),
@@ -29,6 +31,7 @@ let dom={
     price: document.querySelector(".cost"),
     sendbook_btn: document.querySelector(".book_btn"),
 }
+let attraction = null;
 const path=window.location.pathname;
 url="../api"+path;
 fetch(url).then((response)=>{
@@ -58,6 +61,8 @@ fetch(url).then((response)=>{
         circle.className="circle";
         dom.circle_container.appendChild(circle);
     }
+    dom.date.min = new Date().toISOString().split("T")[0];
+    //console.log(dom.date.min);
 }).then(()=>{
     let circles = document.querySelectorAll(".circle");
     for(let i=0; i<circles.length; i++) {

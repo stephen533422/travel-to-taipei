@@ -164,7 +164,7 @@
     border: none;
 }
 .date_icon{
-    width:24px;
+    width: 25px;
     height: 24px;
     position: absolute;
     background: #FFF url(icon/calendar.png) no-repeat center / 24px 24px;
