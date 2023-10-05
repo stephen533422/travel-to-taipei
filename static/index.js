@@ -2,7 +2,9 @@
 //body.scrollTop=0;
 let nextPage=0;
 let dom={
+    nav_title: document.querySelector(".nav_title"),
     sign_btn: document.querySelector(".sign.btn"),
+    book_btn: document.querySelector(".book.btn"),
     modal: document.querySelector(".modal"),
     close_btn: document.querySelector(".close"),
     login_btn: document.querySelector(".login_btn"),
@@ -21,6 +23,11 @@ let dom={
     signup_message: document.querySelector(".signup_message"),
     login_message: document.querySelector(".login_message"),
 };
+
+dom.nav_title.addEventListener("click", (e)=>{
+    //console.log("click");
+    location.href = "/";
+})
 
 let search_btn = document.querySelector(".search_btn");
 search_btn.addEventListener("click", (e)=>{
@@ -42,7 +49,7 @@ search_btn.addEventListener("click", (e)=>{
         infiniteScroll(search_inputbox.value);
     });
 });
-
+//mrt list
 let left_btn = document.querySelector(".left_btn");
 let right_btn = document.querySelector(".right_btn");
 let list=document.querySelector(".list");
@@ -52,7 +59,7 @@ left_btn.addEventListener('click', (e)=>{
 right_btn.addEventListener('click', (e)=>{
     list.scrollLeft +=list.clientWidth/2;
 });
-
+// mrt list
 fetch('/api/mrts') //記得改
 .then((response) => {
     return response.json();
@@ -167,7 +174,7 @@ const infiniteScroll=(keyword)=>{
         observer.observe(target);
     }
 }
-
+// default load
 loadPage().then(()=>{
     let page_end=document.querySelector(".page_end");
     if(!page_end){
@@ -191,20 +198,24 @@ async function getUserByToken(){
     if(user.data){
         try{
             dom.sign_btn.removeEventListener("click", openModal)
+            dom.book_btn.removeEventListener("click", openModal);
         }
         catch(e){
         }
         dom.sign_btn.textContent="登出系統";
         dom.sign_btn.addEventListener("click", logOut);
+        dom.book_btn.addEventListener("click", openBooking);
     }
     else{
         try{
             dom.sign_btn.removeEventListener("click", logOut);
+            dom.book_btn.removeEventListener("click", openBooking);
         }
         catch(e){
         }
         dom.sign_btn.textContent="註冊/登入";
         dom.sign_btn.addEventListener("click", openModal);
+        dom.book_btn.addEventListener("click", openModal);
     }
 }
 async function signUp(){
@@ -286,7 +297,9 @@ function openModal(){
 function closeModal(){
     dom.modal.style.display="none";
 }
-
+function openBooking(){
+    window.location.href="/booking";
+}
 
 getUserByToken();
 dom.close_btn.addEventListener("click", closeModal);

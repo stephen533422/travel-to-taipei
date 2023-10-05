@@ -1,0 +1,205 @@
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+} 
+/* 1200px <screen-width <=1920px*/
+.nav{
+    display: flex;
+    width: 100%;
+    height: 54px;
+    justify-content: center;
+    align-items: center;
+}
+.nav_content{
+    display: flex;
+    width: 1200px;
+    height: 34px;
+    justify-content: space-between;
+}
+.nav_title{
+    width: auto;
+    height: 34px;
+    color: var(--primary-color-cyan-70, #489);
+    font-family: "Noto Sans TC", sans-serif;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 34px;
+    cursor: pointer;
+}
+.nav_btn{
+    display: flex;
+    height: 34px;
+}
+.btn{
+    width: auto;
+    box-sizing: border-box;
+    padding: 10px;
+    border: none;
+    background-color: #fff;
+    color: var(--secondary-color-gray-70, #666);
+    /* Body - Med 16(13.3) */
+    font-family: "Noto Sans TC", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 13.3px; /* 83.125% */
+}
+.sign {
+    width: 91px;
+}
+.btn:hover{
+    cursor: pointer;
+}
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 2; 
+    padding-top: 80px; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%;
+    overscroll-behavior: none;
+    background-color: rgba(0,0,0,0.25); 
+}
+/* Modal Content */
+.modal_window {
+    margin: auto;
+    border-radius: 6px;
+    background: var(--White, #FFF);
+    box-shadow: 0px 4px 60px 0px #AAA;
+    position: relative;
+    overflow: hidden;
+    width:340px;
+    height: auto;
+}
+.decorate_bar{
+    width: 100%;
+    height: 10px;
+    background: var(--additional-color-dark-cyan-gradient-0-deg, linear-gradient(270deg, #378 0%, #6AB 100%));
+}
+.modal_content{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+}
+.login_content{
+    height: auto;
+}
+.signup_content{
+    display: none;
+    height: auto;
+}
+.modal_title{
+    color: var(--secondary-color-gray-70, #666);
+    font-family: "Noto Sans TC", sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px; /* 100% */
+    margin-bottom: 5px;
+    height: 27px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.modal_inputbox{
+    width: 310px;
+    height: 47px;
+    padding: 15px;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 1px solid var(--Gray-500, #CCC);
+    background: var(--White, #FFF);
+    outline: none;
+    color: var(--additional-color-black, #000); 
+    /* Body - Med 16(13.3) */
+    font-family: "Noto Sans TC", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 13.3px; /* 83.125% */
+}
+.modal_inputbox::placeholder{
+    color: var(--secondary-color-gray-50, #757575); 
+}
+.modal_btn{
+    width: 310px;
+    height: 47px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    background: var(--primary-color-cyan-70, #489);
+    border: none;
+    cursor: pointer;
+
+    color: var(--additional-color-white, #FFF);
+    font-family: Noto Sans TC;
+    font-size: 19px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.close {
+    background: url(icon/close.png) no-repeat center / 16px 16px;
+    position: absolute;
+    top: 20px;
+    right: 10px;
+    padding: 7px;
+    box-sizing: border-box;
+    width: 30px;
+    height: 30px;
+}
+.close:hover,
+.close:focus {
+    opacity: 0.5;
+    cursor: pointer;
+  }
+.modal_description{
+    color: var(--secondary-color-gray-70, #666);
+    /* Body - Med 16(13.3) */
+    font-family: Noto Sans TC;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 13.3px; /* 83.125% */
+    height: 22px;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+}
+.switch_login:hover, .switch_signup:hover{
+    cursor: pointer;
+}
+.footer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 104px;
+    background: var(--Gray-700, #757575);
+}
+.footer_content{
+    color: var(--additional-color-white, #FFF);
+    /* Body - Bold 16(13.3) */
+    font-family: "Noto Sans TC", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 13.3px; /* 83.125% */
+}
+@media (max-width: 1200px){
+    .nav_content{
+        width: 100%;
+        padding: 0px 10px 0px 10px;
+    }
+}
+/* 360px <screen-width <=900px*/
+@media (max-width: 900px){
+
+}
