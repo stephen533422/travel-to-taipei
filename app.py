@@ -3,6 +3,7 @@ import mysql.connector
 import os
 import datetime
 import jwt
+import requests
 
 app=Flask(__name__)
 app.config["JSON_AS_ASCII"]=False
@@ -291,5 +292,107 @@ def api_booking():
 			cursor.close()
 			connection.close()
 			return jsonify({"ok": True}), 200
+
+@app.route("/api/orders", methods=["POST"])
+def orders():
+	user=token_auth()
+	if user == None:
+		return_data={"error": True, "message": "authentication failed"}
+		return jsonify(return_data), 403
+	orders = request.json
+	print(orders)
+	if (orders["order"]["contact"]["phone"] == '') or (orders["order"]["contact"]["name"] == '') or (orders["order"]["contact"]["email"] == '') :
+		return_data = {"error": True,"message": "incomplete contact data"}
+		return jsonify(return_data), 400
+	url = "https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime"
+	headers = {
+	"Content-Type": "application/json",
+	"x-api-key": "partner_GTwJKK2kHuh7hNXqQUUW3uxo2r2H7s2A3lHpgK9aRCU2pYRxQ6Dchfr1",
+	}
+	json_data = {
+		"partner_key": "partner_GTwJKK2kHuh7hNXqQUUW3uxo2r2H7s2A3lHpgK9aRCU2pYRxQ6Dchfr1",
+		"prime": orders["prime"],
+		"amount": orders["order"]["price"],
+		"merchant_id": "stephen533422_CTBC",
+		"details": "taipei-day-trip test payment",
+		"cardholder": {
+			"phone_number": orders["order"]["contact"]["phone"],
+			"name": orders["order"]["contact"]["name"],
+			"email": orders["order"]["contact"]["email"],
+		}
+	}
+	web = requests.post(url, json=json_data, headers=headers)
+	print(web.json())
+	response = web.json()
+	if response["status"] != 0:
+		return_data = {"error": True,"message": "create orders failed"}
+		return jsonify(return_data), 400
+	connection = connection_pool.get_connection()
+	if connection.is_connected():
+		cursor=connection.cursor(dictionary=True)
+		insert_stmt = "INSERT INTO orders (number, status, member_id, attraction_id, date, time, price, name, email, phone) VALUES( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
+		data = (response["bank_transaction_id"], response["status"], user["id"], orders["order"]["trip"]["attraction"]["id"], \
+				orders["order"]["trip"]["date"], orders["order"]["trip"]["time"], orders["order"]["price"], \
+				orders["order"]["contact"]["name"], orders["order"]["contact"]["email"], orders["order"]["contact"]["phone"])
+		cursor.execute(insert_stmt, data)
+		connection.commit()
+		cursor.close()
+		connection.close()
+	else:
+		return_data={"error": True, "message": "connection failed"}
+		return jsonify(return_data), 500
+	return_data ={
+		"data":{
+			"number": response.get("bank_transaction_id"),
+			"payment": {
+			"status": response.get("status"),
+			"message": response.get("msg"),
+			}
+		}
+	}
+	return return_data, 200 
+
+@app.route("/api/order/<orderNumber>", methods=["GET"])
+def check_ordernumber(orderNumber):
+	user=token_auth()
+	if user == None:
+		return_data={"error": True, "message": "authentication failed"}
+		return jsonify(return_data), 403
+	connection = connection_pool.get_connection()
+	if connection.is_connected():
+		cursor=connection.cursor(dictionary=True)
+		select_stmt = "SELECT * FROM orders WHERE number = %s;"
+		cursor.execute(select_stmt, (orderNumber,))
+		order = cursor.fetchone()
+		print(order)
+		if order != None :
+			select_stmt = "SELECT * FROM attractions WHERE id = %s;"
+			cursor.execute(select_stmt, (order["attraction_id"],))
+			attraction_data = cursor.fetchone()
+			return_data={"data": {
+					"number": order["number"],
+					"price": order["price"],
+					"trip": {
+					"attraction": {
+						"id":attraction_data["id"], 
+						"name":attraction_data["name"], 
+						"address":attraction_data["address"], 
+						"image": json.loads(attraction_data["images"])[0],
+					},
+					"date": order["date"].strftime("%Y-%m-%d"),
+					"time": order["time"],
+					},
+					"contact": {
+					"name": order["name"],
+					"email": order["email"],
+					"phone": order["phone"],
+					},
+					"status": order["status"],
+			}}
+		else:
+			return_data={"data":None}
+		cursor.close()
+		connection.close()
+	return jsonify(return_data), 200
 
 app.run(host="0.0.0.0", port=3000)
