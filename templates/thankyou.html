@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+    {% block stylesheet %}
+    {{ super() }}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='thankyou.css') }}" />
+    {% endblock stylesheet %}
+    {% block content %}
+    <div class="separator_nav"></div>
+    <div class="main">
+        <div class="main_content">
+            <div class="container">
+                <div class="headline pb15">
+                    <div class="text gray fs19 fw700 lh16">
+                        您好，<span class="user_name">    </span>：
+                    </div>
+                </div>
+                <div class="frame">
+                    <div class="text gray fs16 fw700">
+                        <span class="status"></span>
+                    </div>
+                </div>
+                <div class="frame">                    
+                    <div class="text gray fs16 fw700">
+                        您的訂單編號如下
+                    </div>
+                </div>
+                <div class="frame">                    
+                    <div class="text gray fs16 fw700">
+                        <span class="order_number"></span>
+                    </div>
+                </div>
+                <div class="frame"> 
+                    <div class="text gray fs16 fw500">
+                        請記住此編號，或到會員中心查詢歷史訂單。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock content %}
+    {% block script %}
+    <script src="{{ url_for('static',filename='thankyou.js') }}"> </script>
+    {% endblock script %}
