@@ -152,7 +152,12 @@ let number = window.location.search.split("?number=")[1];
 api("GET", `/api/order/${number}`)
   .then( orderdata=>{
     if(orderdata.data != null){
-        dom.order_status.textContent = "行程預定成功";
+        if(orderdata.data.status === 0){
+            dom.order_status.textContent = "行程預定成功";
+        }
+        else{
+            dom.order_status.textContent = "行程尚未付款，請聯絡服務人員";
+        }
     }
     else{
         dom.order_status.textContent = "查無此訂單編號，請聯絡服務人員";

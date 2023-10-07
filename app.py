@@ -2,6 +2,7 @@ from flask import *
 import mysql.connector
 import os
 import datetime
+import random
 import jwt
 import requests
 
@@ -300,7 +301,7 @@ def orders():
 		return_data={"error": True, "message": "authentication failed"}
 		return jsonify(return_data), 403
 	orders = request.json
-	print(orders)
+	#print(orders)
 	if (orders["order"]["contact"]["phone"] == '') or (orders["order"]["contact"]["name"] == '') or (orders["order"]["contact"]["email"] == '') :
 		return_data = {"error": True,"message": "incomplete contact data"}
 		return jsonify(return_data), 400
@@ -309,6 +310,7 @@ def orders():
 	"Content-Type": "application/json",
 	"x-api-key": "partner_GTwJKK2kHuh7hNXqQUUW3uxo2r2H7s2A3lHpgK9aRCU2pYRxQ6Dchfr1",
 	}
+	random_number = str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9))
 	json_data = {
 		"partner_key": "partner_GTwJKK2kHuh7hNXqQUUW3uxo2r2H7s2A3lHpgK9aRCU2pYRxQ6Dchfr1",
 		"prime": orders["prime"],
@@ -319,19 +321,20 @@ def orders():
 			"phone_number": orders["order"]["contact"]["phone"],
 			"name": orders["order"]["contact"]["name"],
 			"email": orders["order"]["contact"]["email"],
-		}
+		},
+		"order_number": datetime.datetime.now().strftime('%Y%m%d%H%M%S') + random_number,
 	}
 	web = requests.post(url, json=json_data, headers=headers)
 	print(web.json())
 	response = web.json()
-	if response["status"] != 0:
-		return_data = {"error": True,"message": "create orders failed"}
+	if response == None:
+		return_data = {"error": True, "message": "create orders failed"}
 		return jsonify(return_data), 400
 	connection = connection_pool.get_connection()
 	if connection.is_connected():
 		cursor=connection.cursor(dictionary=True)
 		insert_stmt = "INSERT INTO orders (number, status, member_id, attraction_id, date, time, price, name, email, phone) VALUES( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
-		data = (response["bank_transaction_id"], response["status"], user["id"], orders["order"]["trip"]["attraction"]["id"], \
+		data = (json_data["order_number"], response["status"], user["id"], orders["order"]["trip"]["attraction"]["id"], \
 				orders["order"]["trip"]["date"], orders["order"]["trip"]["time"], orders["order"]["price"], \
 				orders["order"]["contact"]["name"], orders["order"]["contact"]["email"], orders["order"]["contact"]["phone"])
 		cursor.execute(insert_stmt, data)
@@ -343,10 +346,10 @@ def orders():
 		return jsonify(return_data), 500
 	return_data ={
 		"data":{
-			"number": response.get("bank_transaction_id"),
+			"number": json_data["order_number"],
 			"payment": {
-			"status": response.get("status"),
-			"message": response.get("msg"),
+			"status": response["status"],
+			"message": response["msg"],
 			}
 		}
 	}
