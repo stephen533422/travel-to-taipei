@@ -17,9 +17,13 @@ let dom={
     attraction_address: document.querySelector(".attraction_adress"),
     input_user_name: document.querySelector("#user_name"),
     input_user_email: document.querySelector("#user_email"),
+    input_user_phone: document.querySelector("#user_phone"),
     isbook: document.querySelectorAll(".isbook"),
     delete_icon: document.querySelector(".delete_icon"),
+    order_btn: document.querySelector(".purchase_btn"),
 };
+let user={};
+let booking = {};
 
 async function api(method, url){
     let token = localStorage.getItem("token");
@@ -144,19 +148,89 @@ function closeModal(){
 function openBooking(){
     window.location.href="/booking";
 }
+
+function order() {
+    //event.preventDefault()
+
+    // 取得 TapPay Fields 的 status
+    const tappayStatus = TPDirect.card.getTappayFieldsStatus()
+
+    // 確認是否可以 getPrime
+    if (tappayStatus.canGetPrime === false) {
+        console.log('can not get prime');
+        alert("請輸入正確的信用卡付款資訊");
+        return;
+    }
+
+    // Get prime
+    TPDirect.card.getPrime((result) => {
+        if (result.status !== 0) {
+            console.log('get prime error ' + result.msg);
+            return;
+        }
+        console.log('get prime 成功，prime: ' + result.card.prime);
+        let data = {
+            "prime": result.card.prime,
+            "order": {
+                "price": booking.data.price,
+                "trip": {
+                "attraction": {
+                    "id": booking.data.attraction.id,
+                    "name": booking.data.attraction.name,
+                    "address": booking.data.attraction.address,
+                    "image": booking.data.attraction.image
+                },
+                "date": booking.data.date,
+                "time": booking.data.time
+                },
+                "contact": {
+                "name": dom.input_user_name.value,
+                "email": dom.input_user_email.value,
+                "phone": dom.input_user_phone.value
+                }
+            }
+        }
+        console.log(JSON.stringify(data));
+        let token = localStorage.getItem("token");
+        fetch("/api/orders",{
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+                "Authorization":`Bearer ${token}`,
+            },
+            body: JSON.stringify(data),
+        }).then((response)=> response.json()
+        ).then((orders)=>{
+            console.log(orders);
+            if(orders.data){
+                console.log(orders.data.number);
+                api("DELETE", "/api/booking");
+                window.location.replace(`/thankyou?number=${orders.data.number}`);
+            }
+            else if(orders.error){
+                alert("付款失敗，請再試一次");
+            }
+        });
+        // send prime to your server, to pay with Pay by Prime API .
+        // Pay By Prime Docs: https://docs.tappaysdk.com/tutorial/zh/back.html#pay-by-prime-api
+    })
+}
+
 // main function
 dom.nav_title.addEventListener("click", (e)=>{
     //console.log("click");
     location.href = "/";
 })
 api("GET", "/api/user/auth")
-  .then( user => {
-    initializeNav(user);
-    initializeUser(user);
+  .then( userdata => {
+    user=userdata;
+    initializeNav(userdata);
+    initializeUser(userdata);
 });
 api("GET", "/api/booking")
-  .then( booking =>{
-    initializeBooking(booking);
+  .then( bookingdata =>{
+    booking = bookingdata;
+    initializeBooking(bookingdata);
 });
 dom.delete_icon.addEventListener("click", async (e)=>{
     response = await api("DELETE", "/api/booking");
@@ -167,3 +241,80 @@ dom.delete_icon.addEventListener("click", async (e)=>{
         alert("刪除失敗");
     }
 });
+TPDirect.setupSDK(137208, 'app_6HrOebCUCFp7uPym2ekNygUqvv1D4fZOGTnjYiVdBoGTi8fjHfX3I6VIqgLv', 'sandbox')
+// Display ccv field
+let fields = {
+    number: {
+        element: document.querySelectorAll(".tpfield")[0],
+        placeholder: "**** **** **** ****"
+    },
+    expirationDate: {
+        element: document.querySelectorAll(".tpfield")[1],
+        placeholder: 'MM / YY'
+    },
+    ccv: {
+        element: document.querySelectorAll(".tpfield")[2],
+        placeholder: "ccv"
+    }
+}
+TPDirect.card.setup({
+    fields: fields,
+    styles: {
+        // Style all elements
+        'input': {
+            'color': 'gray',
+            'font-size': '16px',
+            'font-weight': '500',
+            'line-height': '13.3px',
+            'font-family': '"Noto Sans TC", sans-serif',
+            'font-style': 'normal',
+        },
+        // Styling ccv field
+        'input.ccv': {
+            // 'font-size': '16px'
+        },
+        // Styling expiration-date field
+        'input.expiration-date': {
+            // 'font-size': '16px'
+        },
+        // Styling card-number field
+        'input.card-number': {
+            // 'font-size': '16px'
+        },
+        // style focus state
+        ':focus': {
+            'color': 'black'
+        },
+        // style valid state
+        '.valid': {
+            'color': 'green'
+        },
+        // style invalid state
+        '.invalid': {
+            'color': 'red'
+        },
+        // Media queries
+        // Note that these apply to the iframe, not the root window.
+        /*'@media screen and (max-width: 400px)': {
+            'input': {
+                'color': 'orange'
+            }
+        }*/
+        '.tappay-field-focus': {
+            'border-color': '#66afe9',
+            'outline': '0',
+            '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6)',
+            'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6)',
+        }
+    },
+    // 此設定會顯示卡號輸入正確後，會顯示前六後四碼信用卡卡號
+    isMaskCreditCardNumber: true,
+    maskCreditCardNumberRange: {
+        beginIndex: 6,
+        endIndex: 11
+    }
+})
+dom.order_btn.addEventListener("click", ()=>{
+    order();
+});
+

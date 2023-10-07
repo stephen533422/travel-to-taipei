@@ -80,15 +80,18 @@
                 </div>
                 <div class="field">
                     <div class="text gray fs16 fw500 lh13">卡片號碼：</div>
-                    <input type="text" class="container_inputbox text black fs16 fw500 lh13" placeholder="**** **** **** ****">
+                    <div class="tpfield container_inputbox" id="card-number"></div>
+                    <!--<input type="text" class="container_inputbox text black fs16 fw500 lh13" placeholder="**** **** **** ****">-->
                 </div>
                 <div class="field">
                     <div class="text gray fs16 fw500 lh13">過期時間：</div>
-                    <input type="text" class="container_inputbox text black fs16 fw500 lh13" placeholder="MM / YY">
+                    <div class="tpfield container_inputbox" id="card-expiration-date"></div>
+                    <!--<input type="text" class="container_inputbox text black fs16 fw500 lh13" placeholder="MM / YY">-->
                 </div>
                 <div class="field">
                     <div class="text gray fs16 fw500 lh13">驗證密碼：</div>
-                    <input type="text" class="container_inputbox text black fs16 fw500 lh13" placeholder="CVV">
+                    <div class="tpfield container_inputbox" id="card-ccv"></div>
+                    <!--<input type="text" class="container_inputbox text black fs16 fw500 lh13" placeholder="CVV">-->
                 </div>
             </div>
             <div class="separator hide"></div>
@@ -104,5 +107,6 @@
     </div>
     {% endblock content %}
     {% block script %}
+    <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.14.0"></script>
     <script src="{{ url_for('static',filename='booking.js') }}"> </script>
     {% endblock script %}

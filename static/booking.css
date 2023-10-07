@@ -156,6 +156,7 @@
     border-radius: 5px;
     border: 1px solid var(--Gray-300, #E8E8E8);
     background: var(--White, #FFF);
+    outline: none;
 }
 .black{
     color: var(--additional-color-black, #000);
@@ -204,6 +205,16 @@
 .hide{
     display: none;
 }
+/*
+.tpfield {
+    width: 200px;
+    height: 38px;
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 1px solid var(--Gray-300, #E8E8E8);
+    background: var(--White, #FFF);
+}*/
 @media (max-width: 1020px) {
     .headline{
         width: calc(100% - 20px);
