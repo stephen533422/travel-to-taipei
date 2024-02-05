@@ -1,6 +1,7 @@
 # Travel-to-Taipei
 Taipei-day-trip is an e-commerce platform.
 ### Demo：http://54.249.229.245:3000/
+![smartmockups_ls94ozwz](https://github.com/stephen533422/travel-to-taipei/assets/44090848/07a90a1b-1846-4e99-8ee8-6891e848b7d4)
 ![螢幕擷取畫面 2023-12-15 010624](https://github.com/stephen533422/travel-to-taipei/assets/44090848/b3ccb46e-2709-41c5-aebf-9218c5ec70a5)
 
 ## Technology Stack
